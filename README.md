@@ -18,6 +18,12 @@ The request parameters in the URI query string are:
 * query, the type of venue sought, one of *food*, *drinks*, *coffee*, *shops*, *arts*, *outdoors*, *sights*, *trending*, *nextVenues* (venues frequently visited after a given venue), or *topPicks*. If no value is specified, the default value *food* will be used.
 * radius, the radius in metres from the selected location within which the search is to be performed. If no value is specified, the default value *250* metres will be used.
 
+An example using SwaggerUI is shown below:
+
 ![GitHub Logo](/images/SwaggerUI-example-request.png)
+
+This is the response that was received in this case:
+
+![GitHub Logo](/images/SwaggerUI-example-response.png)
 
 
