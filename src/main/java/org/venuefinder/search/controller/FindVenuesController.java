@@ -6,12 +6,16 @@ package org.venuefinder.search.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.venuefinder.search.domain.response.AbstractServiceResponse;
+import org.venuefinder.search.domain.response.FindVenuesErrorResponse;
 import org.venuefinder.search.domain.response.FindVenuesResponse;
 import org.venuefinder.search.domain.searchrequest.FindVenuesSearchRequest;
+import org.venuefinder.search.exception.FindVenuesSearchException;
 import org.venuefinder.search.service.IFindVenuesService;
 
 import io.swagger.annotations.Api;
@@ -51,7 +55,7 @@ public class FindVenuesController {
      * @param query
      * @return
      */
-    @RequestMapping(value="/findvenues",method = RequestMethod.GET)
+    @GetMapping(value="/findvenues")
     @ApiOperation(
             value = "Find venues by place name", notes = "The latitude and longitude can be provided instead. If the place name, latitude and longitude are all provided, the place name is used as the search criterion. If the radius is not set, a default of 250 metres is used. If the query is not set, a default of food is used. ",
             response = FindVenuesResponse.class)
@@ -59,20 +63,28 @@ public class FindVenuesController {
             @ApiResponse(code = 400, message = "Error encountered fetching location data from remote service"),
             @ApiResponse(code = 404, message = "Place not found, check place name or latitude and longitude")}
     )
-    public ResponseEntity<FindVenuesResponse> findServices(@RequestParam(value="placeName", required=false, defaultValue="") String placeName,
+    public ResponseEntity<? extends AbstractServiceResponse> findServices(@RequestParam(value="placeName", required=false, defaultValue="") String placeName,
             @RequestParam(value="latitude", required=false, defaultValue="") String latitude,
             @RequestParam(value="longitude", required=false, defaultValue="") String longitude,
             @RequestParam(value="radius", required=false, defaultValue="") String radius,
             @RequestParam(value="query", required=false, defaultValue="") String query) {
+        FindVenuesResponse findVenuesResponse = null;;
         ResponseEntity<FindVenuesResponse> responseEntity;
         String radiusToRequest = (radius.equals("") ? DEFAULT_RADIUS : radius);
         String queryToRequest = (query.equals("") ? DEFAULT_QUERY : query);
         if (areLocationParametersValid(placeName, latitude, longitude)) {
             FindVenuesSearchRequest findVenuesSearchRequest = new FindVenuesSearchRequest(placeName, latitude, longitude, queryToRequest, radiusToRequest);
-            FindVenuesResponse findVenuesResponse = findVenuesService.searchVenues(findVenuesSearchRequest);
+            try {
+                findVenuesResponse = findVenuesService.searchVenues(findVenuesSearchRequest);
+            } catch(FindVenuesSearchException fvse) {
+                FindVenuesErrorResponse findVenuesErrorResponse = new FindVenuesErrorResponse(fvse.getHttpStatusCode(), fvse.getMessage());
+                ResponseEntity<FindVenuesErrorResponse> errorResponseEntity = new ResponseEntity<>(findVenuesErrorResponse, fvse.getHttpStatusCode());
+                return errorResponseEntity;
+            }
+            findVenuesResponse.setHttpStatusCode(HttpStatus.OK);
             responseEntity = new ResponseEntity<FindVenuesResponse>(findVenuesResponse,HttpStatus.OK);
         } else {
-            responseEntity = new ResponseEntity<FindVenuesResponse>(new FindVenuesResponse(),HttpStatus.NOT_FOUND);
+            responseEntity = new ResponseEntity<FindVenuesResponse>(new FindVenuesResponse(HttpStatus.NOT_FOUND),HttpStatus.NOT_FOUND);
         }
         return responseEntity;
     }

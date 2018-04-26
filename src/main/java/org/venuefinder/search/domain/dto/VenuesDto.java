@@ -6,12 +6,15 @@ package org.venuefinder.search.domain.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * The location details and a list of nearby venues
  * 
  * @author peterscott
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class VenuesDto {
 
     private String latitude;

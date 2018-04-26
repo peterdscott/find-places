@@ -5,6 +5,7 @@ package org.venuefinder.search.repository;
 
 import org.venuefinder.search.domain.dto.VenuesDto;
 import org.venuefinder.search.domain.searchrequest.FindVenuesSearchRequest;
+import org.venuefinder.search.exception.FindVenuesSearchException;
 
 /**
  * @author peterscott
@@ -19,5 +20,5 @@ public interface IFindVenuesRepository {
      * @param findVenuesSearchRequest
      * @return VenuesDto containing search results
      */
-    public VenuesDto searchVenues(FindVenuesSearchRequest findVenuesSearchRequest);
+    public VenuesDto searchVenues(FindVenuesSearchRequest findVenuesSearchRequest) throws FindVenuesSearchException;
 }

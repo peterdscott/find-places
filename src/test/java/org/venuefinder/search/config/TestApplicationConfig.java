@@ -7,6 +7,7 @@ import org.dozer.DozerBeanMapper;
 import org.dozer.loader.api.BeanMappingBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 import org.venuefinder.search.domain.dto.VenueDto;
 import org.venuefinder.search.domain.dto.VenuesDto;
 import org.venuefinder.search.domain.response.FindVenuesResponse;
@@ -34,6 +35,11 @@ public class TestApplicationConfig {
     public IFindVenuesRepository foursquareFindVenues() {
        return new FoursquareFindVenues();    
    }
+    
+    @Bean
+    RestTemplate foursquareRestTemplate() {
+        return new RestTemplate();
+    }
     
     @Bean IUnmarshaller foursquareMarshaller() {
         return new FoursquareUnmarshaller();

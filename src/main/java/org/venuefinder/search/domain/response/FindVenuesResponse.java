@@ -6,6 +6,7 @@ package org.venuefinder.search.domain.response;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.venuefinder.search.domain.dto.VenueDto;
 import org.venuefinder.search.domain.searchrequest.FindVenuesSearchRequest;
 
@@ -13,7 +14,7 @@ import org.venuefinder.search.domain.searchrequest.FindVenuesSearchRequest;
  * @author peterscott
  *
  */
-public class FindVenuesResponse {
+public class FindVenuesResponse extends AbstractServiceResponse{
     private String latitude;
     
     private String longitude;
@@ -62,5 +63,16 @@ public class FindVenuesResponse {
 
     public void setVenues(List<VenueResponseElement> venues) {
         this.venues = venues;
+    }
+    
+    /*
+     * Required by Dozer Mapper
+     */
+    public FindVenuesResponse() {
+        super();        
+    }
+    
+    public FindVenuesResponse(HttpStatus httpStatusCode) {
+        setHttpStatusCode(httpStatusCode);
     }
 }
